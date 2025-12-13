@@ -13,11 +13,19 @@ def add_subparser(subparsers):
 
 
 def handle(args, console: Console):
+    data = load_json(PROGRESS_FILE)
     in_progress = get_in_progress()
     if in_progress:
+        lines = []
+        for i, p in enumerate(in_progress):
+            leetcode_id = ""
+            if p in data and "leetcode_id" in data[p]:
+                leetcode_id = f"[dim]#{data[p]['leetcode_id']}[/dim] "
+            lines.append(f"{i+1}. {leetcode_id}{p}")
+        
         console.print(
             Panel.fit(
-                "\n".join(f"{i+1}. {p}" for i, p in enumerate(in_progress)),
+                "\n".join(lines),
                 title=f"[bold magenta]Problems in Progress ({len(in_progress)})[/bold magenta]",
                 border_style="magenta",
                 title_align="left",

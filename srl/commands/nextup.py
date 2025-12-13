@@ -74,11 +74,19 @@ def handle(args, console: Console):
                     f"[green]Added[/green] [bold]{args.name}[/bold] to Next Up Queue"
                 )
     elif args.action == "list":
+        next_up_data = load_json(NEXT_UP_FILE)
         next_up = get_next_up_problems()
         if next_up:
+            lines = []
+            for name in next_up:
+                leetcode_id = ""
+                if name in next_up_data and "leetcode_id" in next_up_data[name]:
+                    leetcode_id = f"[dim]#{next_up_data[name]['leetcode_id']}[/dim] "
+                lines.append(f"• {leetcode_id}{name}")
+            
             console.print(
                 Panel.fit(
-                    "\n".join(f"• {name}" for name in next_up),
+                    "\n".join(lines),
                     title=f"[bold cyan]Next Up Problems ({len(next_up)})[/bold cyan]",
                     border_style="cyan",
                     title_align="left",

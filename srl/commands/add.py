@@ -17,14 +17,57 @@ def add_subparser(subparsers):
     group.add_argument(
         "-n", "--number", type=int, help="Problem number from `srl list`"
     )
+    group.add_argument(
+        "--leetcode-id", type=int, help="LeetCode problem ID to add/update"
+    )
     add.add_argument("rating", type=int, choices=range(1, 6), help="Rating from 1-5")
+    add.add_argument(
+        "--id", type=int, help="Optional LeetCode problem ID (when adding by name)"
+    )
+    add.add_argument(
+        "--note", type=str, help="Note about the solution/approach"
+    )
+    add.add_argument(
+        "--mistake", type=str, help="What went wrong or what to watch out for"
+    )
+    add.add_argument(
+        "--time", type=int, help="Time spent in minutes"
+    )
     add.set_defaults(handler=handle)
     return add
 
 
 def handle(args, console: Console):
     rating: int = args.rating
-    if hasattr(args, "number") and args.number is not None:
+    leetcode_id = getattr(args, "id", None)
+    
+    if hasattr(args, "leetcode_id") and args.leetcode_id is not None:
+        # Search by LeetCode ID
+        data = load_json(PROGRESS_FILE)
+        name = None
+        for key, value in data.items():
+            if value.get("leetcode_id") == args.leetcode_id:
+                name = key
+                break
+        
+        if not name:
+            # Check mastered as well
+            mastered = load_json(MASTERED_FILE)
+            for key, value in mastered.items():
+                if value.get("leetcode_id") == args.leetcode_id:
+                    console.print(
+                        f"[bold red]Problem with LeetCode ID {args.leetcode_id} is already mastered.[/bold red]"
+                    )
+                    return
+            
+            console.print(
+                f"[bold red]No problem found with LeetCode ID {args.leetcode_id}.[/bold red]"
+            )
+            console.print(
+                "[yellow]Hint:[/yellow] Add a new problem first with: srl add \"Problem Name\" --id {args.leetcode_id} <rating>"
+            )
+            return
+    elif hasattr(args, "number") and args.number is not None:
         problems = get_due_problems()
         if args.number > len(problems) or args.number <= 0:
             console.print(f"[bold red]Invalid problem number: {args.number}[/bold red]")
@@ -45,12 +88,26 @@ def handle(args, console: Console):
     # Use existing name if found, otherwise use the provided name
     target_name = existing_name if existing_name else name
     entry = data.get(target_name, {"history": []})
-    entry["history"].append(
-        {
-            "rating": rating,
-            "date": today().isoformat(),
-        }
-    )
+    
+    # Add or update LeetCode ID if provided
+    if leetcode_id is not None:
+        entry["leetcode_id"] = leetcode_id
+    
+    # Build history entry
+    history_entry = {
+        "rating": rating,
+        "date": today().isoformat(),
+    }
+    
+    # Add optional fields if provided
+    if hasattr(args, "note") and args.note:
+        history_entry["note"] = args.note
+    if hasattr(args, "mistake") and args.mistake:
+        history_entry["mistake"] = args.mistake
+    if hasattr(args, "time") and args.time:
+        history_entry["time_spent"] = args.time
+    
+    entry["history"].append(history_entry)
 
     # Mastery check: last two ratings are 5
     history = entry["history"]

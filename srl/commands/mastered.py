@@ -16,6 +16,7 @@ def add_subparser(subparsers):
 
 
 def handle(args, console: Console):
+    data = load_json(MASTERED_FILE)
     mastered_problems = get_mastered_problems()
     mastered_count = len(mastered_problems)
     if args.c:
@@ -27,12 +28,16 @@ def handle(args, console: Console):
             table = Table(
                 title=f"Mastered Problems ({mastered_count})", title_justify="left"
             )
+            table.add_column("ID", style="dim", no_wrap=True)
             table.add_column("Problem", style="cyan", no_wrap=True)
             table.add_column("Attempts", style="magenta")
             table.add_column("Mastered Date", style="green")
 
             for name, attempts, mastered_date in mastered_problems:
-                table.add_row(name, str(attempts), mastered_date)
+                leetcode_id = ""
+                if name in data and "leetcode_id" in data[name]:
+                    leetcode_id = f"#{data[name]['leetcode_id']}"
+                table.add_row(leetcode_id, name, str(attempts), mastered_date)
 
             console.print(table)
 

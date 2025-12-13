@@ -35,9 +35,14 @@ def handle(args, console: Console):
 
     if problems:
         lines = []
+        data = load_json(PROGRESS_FILE)
         for i, p in enumerate(problems):
             mark = " [magenta]*[/magenta]" if p in masters else ""
-            lines.append(f"{i+1}. {p}{mark}")
+            # Get LeetCode ID if it exists
+            leetcode_id = ""
+            if p in data and "leetcode_id" in data[p]:
+                leetcode_id = f"[dim]#{data[p]['leetcode_id']}[/dim] "
+            lines.append(f"{i+1}. {leetcode_id}{p}{mark}")
 
         console.print(
             Panel.fit(
