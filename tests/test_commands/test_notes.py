@@ -278,27 +278,41 @@ def test_show_compact_view(mock_data, console, dump_json):
     problem = "Test Problem"
     leetcode_id = 999
     
-    # Add problem with mix of attempts with and without notes
+    # Add problem with mix of attempts with and without notes across multiple dates
     progress_data = {
         problem: {
             "leetcode_id": leetcode_id,
             "history": [
                 {
+                    "rating": 2,
+                    "date": "2025-12-08",
+                    "note": "First attempt - struggled with the approach, need to review fundamentals",
+                    "mistake": "Completely wrong algorithm, used brute force",
+                    "time_spent": 45
+                },
+                {
                     "rating": 3,
                     "date": "2025-12-10",
-                    "note": "First attempt with notes",
-                    "time_spent": 30
+                    "note": "Better understanding after reading solution",
+                    "time_spent": 35
+                },
+                {
+                    "rating": 3,
+                    "date": "2025-12-10", 
+                    "time_spent": 20  # No note/mistake - should be skipped
                 },
                 {
                     "rating": 4,
-                    "date": "2025-12-13",
-                    "time_spent": 15
+                    "date": "2025-12-12",
+                    "note": "Almost perfect, just small issues",
+                    "mistake": "Off-by-one error in loop condition",
+                    "time_spent": 25
                 },
                 {
                     "rating": 5,
                     "date": "2025-12-13",
-                    "note": "Final mastery attempt",
-                    "time_spent": 10
+                    "note": "Perfect solve! Finally understood the pattern completely",
+                    "time_spent": 15
                 }
             ]
         }
@@ -310,10 +324,12 @@ def test_show_compact_view(mock_data, console, dump_json):
     
     output = console.export_text()
     assert problem in output
-    assert "First attempt with notes" in output
-    assert "Final mastery attempt" in output
-    # Second attempt without notes should not show #2
-    assert "#2" not in output
-    # But #1 and #3 should be present
+    assert "First attempt - struggled" in output
+    assert "Perfect solve!" in output
+    # Second attempt without notes should not show #3
+    assert "#3" not in output
+    # But #1, #2, #4, #5 should be present
     assert "#1" in output
-    assert "#3" in output
+    assert "#2" in output
+    assert "#4" in output
+    assert "#5" in output

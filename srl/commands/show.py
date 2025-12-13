@@ -105,32 +105,77 @@ def handle(args, console: Console):
     
     # Compact view
     if hasattr(args, "compact") and args.compact:
+        console.print(f"[bold dim]Showing attempts with notes/mistakes only[/bold dim]")
+        console.print()
+        
         last_date = None
+        attempts_with_notes = []
+        
+        # First pass: collect attempts with notes/mistakes and track original indices
         for i, entry in enumerate(history, 1):
-            # Skip attempts without notes or mistakes
-            if not entry.get("note") and not entry.get("mistake"):
-                continue
+            if entry.get("note") or entry.get("mistake"):
+                attempts_with_notes.append((i, entry))
+        
+        if not attempts_with_notes:
+            console.print("[dim]No attempts with notes or mistakes to show[/dim]")
+            console.print()
+            return
             
+        for original_idx, entry in attempts_with_notes:
             current_date = entry["date"]
             
-            # Show date separator if date changed
+            # Show date separator with improved styling
             if current_date != last_date:
                 if last_date is not None:
                     console.print()
-                console.print(f"[bold cyan]━━━ {current_date} ━━━[/bold cyan]")
+                # Make date more readable
+                try:
+                    date_obj = datetime.fromisoformat(current_date)
+                    formatted_date = date_obj.strftime("%b %d, %Y")
+                except:
+                    formatted_date = current_date
+                console.print(f"[bold blue]📅 {formatted_date}[/bold blue]")
                 last_date = current_date
             
-            # Show attempt info
+            # Build attempt header with better spacing
             rating_stars = "⭐" * entry["rating"]
-            time_str = f"{entry.get('time_spent', '')}m" if entry.get('time_spent') else ""
+            time_str = f"⏱️ {entry.get('time_spent', '')}m" if entry.get('time_spent') else ""
             
-            console.print(f"  [dim]#{i}[/dim] {rating_stars} {f'[magenta]{time_str}[/magenta]' if time_str else ''}")
+            # Progress indicator based on rating
+            if entry["rating"] >= 5:
+                progress_emoji = "🎯"
+            elif entry["rating"] >= 4:
+                progress_emoji = "✅"
+            elif entry["rating"] >= 3:
+                progress_emoji = "⚡"
+            else:
+                progress_emoji = "📝"
+                
+            header_line = f"  {progress_emoji} [dim]#{original_idx}[/dim] {rating_stars}"
+            if time_str:
+                header_line += f" [magenta]{time_str}[/magenta]"
+                
+            console.print(header_line)
             
+            # Show note with proper text wrapping
             if entry.get("note"):
-                console.print(f"    [white]Note:[/white] {entry['note']}")
+                note_text = entry["note"]
+                console.print(f"    [dim]💡 [/dim][white]{note_text}[/white]")
+                
+            # Show mistake with distinct styling
             if entry.get("mistake"):
-                console.print(f"    [red]Mistake:[/red] {entry['mistake']}")
+                mistake_text = entry["mistake"]
+                console.print(f"    [dim]⚠️  [/dim][red]{mistake_text}[/red]")
+            
+            # Add small spacing between attempts on same date
+            console.print()
         
+        # Show summary stats
+        total_attempts = len(history)
+        attempts_with_data = len(attempts_with_notes)
+        avg_rating = sum(e["rating"] for e in history) / len(history) if history else 0
+        
+        console.print(f"[dim]📊 Showing {attempts_with_data}/{total_attempts} attempts • Average rating: {avg_rating:.1f}⭐[/dim]")
         console.print()
         return
     
