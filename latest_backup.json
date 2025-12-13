@@ -1,0 +1,133 @@
+{
+  "exported_at": "2025-12-13T18:45:11.985448",
+  "srl_version": "1.0.0",
+  "export_type": "full",
+  "data": {
+    "problems_in_progress": {
+      "Valid Anagram": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "note": "Lowercase letter hashmap for optimized O(1) space solution, sort solution for completely O(1) space",
+            "time_spent": 3
+          }
+        ],
+        "leetcode_id": 242
+      },
+      "Two Sum": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "note": "Hashmap solution, two pointer with sorting wont work here because this problem needs the indices - sorting destorys the indices. However if the problem just needs a smple yes / no then its possible",
+            "time_spent": 3
+          }
+        ],
+        "leetcode_id": 1
+      },
+      "Longest Common Prefix": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "note": "O(M * N) Time- M is length of strs array, N is length of shortest prefix",
+            "time_spent": 5
+          }
+        ],
+        "leetcode_id": 14
+      },
+      "Group Anagrams": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "note": "Sorting solution using STL - time would be O(N * K Log K) - where N is length of strs array, K is length each of individual string. Optimization is using counting sort to sacrifice space for linear sort time",
+            "time_spent": 10
+          }
+        ],
+        "leetcode_id": 49
+      },
+      "Remove Element": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "note": "STL usage of remove_if and remove",
+            "time_spent": 5
+          }
+        ],
+        "leetcode_id": 27
+      },
+      "Longest Consecutive Sequence": {
+        "history": [
+          {
+            "rating": 3,
+            "date": "2025-12-13",
+            "note": "Sort to have a O(n log n) solution, but true O(n) time solution is by using a set",
+            "mistake": "Couldn't immediately grasp the logic for the set based solution ; understood the sort one only"
+          }
+        ],
+        "leetcode_id": 128
+      },
+      "Majority Element": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "note": "Hashmap to get frequency",
+            "time_spent": 3
+          }
+        ],
+        "leetcode_id": 169
+      },
+      "Product of Array Except Self": {
+        "history": [
+          {
+            "rating": 4,
+            "date": "2025-12-13",
+            "note": "Use the trick of holding the right product within an integer value instead of using an array since its just holding cumulative product",
+            "mistake": "A little slow when coming to the solution, but still pretty good",
+            "time_spent": 7
+          }
+        ],
+        "leetcode_id": 238
+      }
+    },
+    "problems_mastered": {
+      "Concatenation of Array": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "note": "Simple array concatenation, append nums to itself",
+            "time_spent": 5
+          },
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "time_spent": 3
+          }
+        ],
+        "leetcode_id": 1929
+      },
+      "Contains Duplicate": {
+        "history": [
+          {
+            "rating": 4,
+            "date": "2025-12-13",
+            "note": "HashSet for O(n) solution time and space, sort for O(1) space solution",
+            "time_spent": 15
+          },
+          {
+            "rating": 5,
+            "date": "2025-12-13",
+            "time_spent": 8
+          }
+        ],
+        "leetcode_id": 217
+      }
+    },
+    "next_up": {}
+  }
+}
