@@ -21,6 +21,11 @@ def add_subparser(subparsers):
         default=12,
         help="Number of months to display (default: 12)",
     )
+    parser.add_argument(
+        "--summary",
+        action="store_true",
+        help="Show activity summary statistics",
+    )
     parser.set_defaults(handler=handle)
     return parser
 
@@ -31,6 +36,8 @@ def handle(args, console: Console):
     render_activity(console, counts, colors, getattr(args, "months", 12))
     console.print("-" * 5)
     render_legend(console, colors)
+    if getattr(args, "summary", False):
+        render_summary(console, counts, getattr(args, "months", 12))
 
 
 def render_legend(console: Console, colors: dict[int, str]):
@@ -55,6 +62,31 @@ def render_activity(
         if month == 0:
             month = 12
             year -= 1
+    
+    # Display the date range for the calendar
+    start_year, start_month = months_list[-1]  # Earliest month
+    end_year, end_month = months_list[0]       # Latest month
+    
+    start_date = date(start_year, start_month, 1)
+    end_date = date(end_year, end_month, 1)
+    
+    start_str = start_date.strftime("%B %Y")
+    end_str = end_date.strftime("%B %Y")
+    
+    if months == 1:
+        # Single month
+        console.print(f"[bold cyan]{start_str}[/bold cyan]")
+    elif start_year == end_year:
+        # Same year, show abbreviated format
+        if start_month == end_month:
+            console.print(f"[bold cyan]{start_str}[/bold cyan]")
+        else:
+            start_abbrev = start_date.strftime("%b")
+            console.print(f"[bold cyan]{start_abbrev} - {end_str}[/bold cyan]")
+    else:
+        # Different years, show full format
+        console.print(f"[bold cyan]{start_str} - {end_str}[/bold cyan]")
+    console.print()  # Add spacing after the header
 
     grids: list[list[list[int | str]]] = []
     for y, m in reversed(months_list):
@@ -78,11 +110,14 @@ def render_activity(
 
         rendered_row = []
         for item in combined_row:
-            rendered_row.append(
-                f" [{colors.get(item, default_color)}]■[/]"
-                if isinstance(item, int)
-                else item
-            )
+            if isinstance(item, int):
+                rendered_row.append(f" [{colors.get(item, default_color)}]■[/]")
+            elif isinstance(item, str) and item.startswith("TODAY:"):
+                # Extract the count from TODAY:count
+                count = int(item.split(":")[1])
+                rendered_row.append(f" [{colors.get(count, default_color)}]⬜[/]")
+            else:
+                rendered_row.append(item)
         table.add_row(*rendered_row)
 
     console.print(table)
@@ -90,6 +125,89 @@ def render_activity(
 
 def key(d: date) -> str:
     return d.isoformat()
+
+
+def render_summary(console: Console, counts: Counter[str], months: int):
+    """Render activity summary statistics"""
+    # Filter counts to only include dates within the specified month range
+    today = date.today()
+    months_list = []
+    year = today.year
+    month = today.month
+    for _ in range(months):
+        months_list.append((year, month))
+        month -= 1
+        if month == 0:
+            month = 12
+            year -= 1
+    
+    # Calculate the date range for filtering
+    start_year, start_month = months_list[-1]  # Earliest month
+    start_date = date(start_year, start_month, 1)
+    end_date = today
+    
+    # Filter counts to only include dates within the month range
+    filtered_counts = Counter()
+    for date_str, count in counts.items():
+        try:
+            activity_date = date.fromisoformat(date_str)
+            if start_date <= activity_date <= end_date:
+                filtered_counts[date_str] = count
+        except:
+            continue  # Skip invalid date strings
+    
+    # Calculate summary stats from filtered data
+    total_problems = sum(filtered_counts.values())
+    total_days = len(filtered_counts)
+    
+    if total_problems == 0:
+        console.print("[dim]No activity in this period[/dim]")
+        return
+    
+    # Find most active day
+    max_count = max(filtered_counts.values())
+    most_active_days = [day for day, count in filtered_counts.items() if count == max_count]
+    most_active_day = most_active_days[0]  # Just take the first if multiple
+    
+    # Calculate streak (consecutive days with activity) from filtered data
+    sorted_days = sorted(filtered_counts.keys())
+    current_streak = 0
+    max_streak = 0
+    
+    for i, day_str in enumerate(sorted_days):
+        day_date = date.fromisoformat(day_str)
+        if i == 0:
+            current_streak = 1
+        else:
+            prev_day_str = sorted_days[i-1]
+            prev_date = date.fromisoformat(prev_day_str)
+            if (day_date - prev_date).days == 1:
+                current_streak += 1
+            else:
+                max_streak = max(max_streak, current_streak)
+                current_streak = 1
+    max_streak = max(max_streak, current_streak)
+    
+    # Format most active day
+    try:
+        active_date = date.fromisoformat(most_active_day)
+        formatted_date = active_date.strftime("%b %d")
+    except:
+        formatted_date = most_active_day
+    
+    # Build and display summary with better formatting
+    avg_per_active_day = total_problems / total_days if total_days > 0 else 0
+    
+    console.print()
+    console.print("[bold]Activity Summary:[/bold]")
+    console.print(f"  • [bold green]{total_problems}[/bold green] problems solved across [yellow]{total_days}[/yellow] active days")
+    console.print(f"  • Average: [cyan]{avg_per_active_day:.1f}[/cyan] problems per active day")
+    
+    if max_streak > 1:
+        console.print(f"  • Best streak: [magenta]{max_streak}[/magenta] consecutive days")
+    
+    if max_count > 1:
+        console.print(f"  • Most active day: [bright_blue]{formatted_date}[/bright_blue] with [green]{max_count}[/green] problems")
 
 
 def get_all_date_counts() -> Counter[str]:
@@ -144,7 +262,12 @@ def build_month(
     col = 0
     while day.month == current_month and day <= today:
         row = (day.weekday() + 1) % 7
-        grid[row][col] = counts.get(key(day), 0)
+        count = counts.get(key(day), 0)
+        # Mark today with special marker
+        if day == today:
+            grid[row][col] = f"TODAY:{count}"  # Special marker for today
+        else:
+            grid[row][col] = count
         day += timedelta(days=1)
         if row == 6:
             col += 1
