@@ -1,5 +1,5 @@
 {
-  "exported_at": "2025-12-13T18:45:11.985448",
+  "exported_at": "2025-12-14T01:43:38.895562",
   "srl_version": "1.0.0",
   "export_type": "full",
   "data": {
@@ -92,6 +92,50 @@
           }
         ],
         "leetcode_id": 238
+      },
+      "Top k Frequent Elements": {
+        "history": [
+          {
+            "rating": 3,
+            "date": "2025-12-14",
+            "note": "Min Heap trick to keep max k elements, standard STL sorting using comparator, quick select trick to pattern match to questions asking for top k, median, max k, min k",
+            "mistake": "Completely blank on nth_element / quickselect algo, didn't understand it at all ; also didn't understand the STL nth_element usage",
+            "time_spent": 25
+          }
+        ],
+        "leetcode_id": 347
+      },
+      "Sort Colours": {
+        "history": [
+          {
+            "rating": 2,
+            "date": "2025-12-14",
+            "note": "Two pointer approach ; counting sort using min and max elements",
+            "mistake": "Could not figure out the counting sort algo even though it was more expensive",
+            "time_spent": 5
+          }
+        ],
+        "leetcode_id": 75
+      },
+      "Best Time to Buy And Sell Stock": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-14",
+            "time_spent": 5
+          }
+        ],
+        "leetcode_id": 121
+      },
+      "Best Time to Buy And Sell Stock II": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-14",
+            "time_spent": 10
+          }
+        ],
+        "leetcode_id": 122
       }
     },
     "problems_mastered": {
