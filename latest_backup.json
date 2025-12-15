@@ -1,5 +1,5 @@
 {
-  "exported_at": "2025-12-14T01:43:38.895562",
+  "exported_at": "2025-12-15T01:51:31.503876",
   "srl_version": "1.0.0",
   "export_type": "full",
   "data": {
@@ -136,6 +136,108 @@
           }
         ],
         "leetcode_id": 122
+      },
+      "Valid Sudoku": {
+        "history": [
+          {
+            "rating": 2,
+            "date": "2025-12-14",
+            "note": "Using an array of sets ; and a single set for optimization ; further optimization is using a bool / char array",
+            "mistake": "Could not figure out the bitmasking approach which is more efficient",
+            "time_spent": 10
+          }
+        ],
+        "leetcode_id": 36
+      },
+      "Reverse String": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-14",
+            "note": "usage of STL reverse function as a C++ specific thing",
+            "time_spent": 3
+          }
+        ],
+        "leetcode_id": 344
+      },
+      "Merge Sorted Array": {
+        "history": [
+          {
+            "rating": 3,
+            "date": "2025-12-14",
+            "note": "Standard 2 ptr usage paradigm",
+            "mistake": "Couldn't immediate grasp the need to insert from reverse since we're doing inplace",
+            "time_spent": 10
+          }
+        ],
+        "leetcode_id": 88
+      },
+      "Merge Strings Alternatively": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-14",
+            "note": "One optimization is using one pointer instead of two - although worst case complexities stay the same",
+            "time_spent": 5
+          }
+        ],
+        "leetcode_id": 1768
+      },
+      "Remove Duplicates from Sorted Array": {
+        "history": [
+          {
+            "rating": 4,
+            "date": "2025-12-14",
+            "note": "Standard two pointer in a sorted space. STL magic can use unique which removes consecutive equivalent elements",
+            "time_spent": 10
+          }
+        ],
+        "leetcode_id": 26
+      },
+      "Two Sum II Input Array Is Sorted": {
+        "history": [
+          {
+            "rating": 5,
+            "date": "2025-12-14",
+            "time_spent": 4
+          }
+        ],
+        "leetcode_id": 167
+      },
+      "Valid Palindrome II": {
+        "history": [
+          {
+            "rating": 2,
+            "date": "2025-12-14",
+            "note": "Two pointer approach for palindrome pattern",
+            "mistake": "Couldn't easily grasp the intuition behind doing a scan when removing one char vs the other",
+            "time_spent": 10
+          }
+        ],
+        "leetcode_id": 680
+      },
+      "3Sum": {
+        "history": [
+          {
+            "rating": 3,
+            "date": "2025-12-14",
+            "note": "Two pointer approach with sorting paradigm, set approach to find a target sum which two numbers can add up to",
+            "mistake": "Couldn't immediately come up with the 2 sum approach which uses the complement to find out whether the target exists or not",
+            "time_spent": 10
+          }
+        ],
+        "leetcode_id": 15
+      },
+      "Rotate Array": {
+        "history": [
+          {
+            "rating": 2,
+            "date": "2025-12-14",
+            "mistake": "Couldn't come up with intuition for reversing the array",
+            "time_spent": 15
+          }
+        ],
+        "leetcode_id": 189
       }
     },
     "problems_mastered": {
