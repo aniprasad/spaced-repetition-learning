@@ -188,3 +188,14 @@ def test_handle_current_day_indicator(mock_data, console):
         output = console.export_text()
         # Should contain today indicator (⬜)
         assert "⬜" in output
+
+
+def test_handle_includes_activity_calendar_heading(mock_data, console):
+    """Test calendar always includes the Activity Calendar heading"""
+    args = SimpleNamespace(months=1, summary=False)
+    
+    calendar.handle(args, console)
+    
+    output = console.export_text()
+    # Should include the Activity Calendar heading
+    assert "Activity Calendar" in output

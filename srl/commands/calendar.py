@@ -73,6 +73,9 @@ def render_activity(
     start_str = start_date.strftime("%B %Y")
     end_str = end_date.strftime("%B %Y")
     
+    # Add a clear heading
+    console.print("[bold magenta]Activity Calendar[/bold magenta]")
+    
     if months == 1:
         # Single month
         console.print(f"[bold cyan]{start_str}[/bold cyan]")
