@@ -1,8 +1,10 @@
 from srl.commands import mastered, add
+from srl.commands import list_
 from types import SimpleNamespace
 
 
-def test_mastered_count(console):
+def test_mastered_count(console, monkeypatch):
+    monkeypatch.setattr(list_, "should_audit", lambda: False)
     problem = "Counting Test"
     rating = 5
     args = SimpleNamespace(name=problem, rating=rating)
@@ -18,7 +20,8 @@ def test_mastered_count(console):
     assert "1" in output
 
 
-def test_mastered_list_with_items(console, today_string):
+def test_mastered_list_with_items(console, today_string, monkeypatch):
+    monkeypatch.setattr(list_, "should_audit", lambda: False)
     problem_a = "Problem A"
     problem_b = "Problem B"
 
@@ -46,7 +49,9 @@ def test_mastered_list_with_items(console, today_string):
     assert today_string in output
 
 
-def test_mastered_list_empty(console):
+def test_mastered_list_empty(console, monkeypatch):
+    monkeypatch.setattr(list_, "should_audit", lambda: False)
+    
     args = SimpleNamespace(c=False)
     mastered.handle(args=args, console=console)
 
@@ -54,7 +59,8 @@ def test_mastered_list_empty(console):
     assert "No mastered problems yet" in output
 
 
-def test_get_mastered_problems_filters_empty_history(console, today_string):
+def test_get_mastered_problems_filters_empty_history(console, today_string, monkeypatch):
+    monkeypatch.setattr(list_, "should_audit", lambda: False)
     problem_a = "Problem A"
 
     args = SimpleNamespace(name=problem_a, rating=5)

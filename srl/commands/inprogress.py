@@ -4,6 +4,7 @@ from srl.storage import (
     load_json,
     PROGRESS_FILE,
 )
+from srl.commands.list_ import maybe_trigger_audit
 
 
 def add_subparser(subparsers):
@@ -13,6 +14,9 @@ def add_subparser(subparsers):
 
 
 def handle(args, console: Console):
+    if maybe_trigger_audit(console):
+        return
+
     data = load_json(PROGRESS_FILE)
     in_progress = get_in_progress()
     if in_progress:

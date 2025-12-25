@@ -1,8 +1,10 @@
 from srl.commands import inprogress, add
+from srl.commands import list_
 from types import SimpleNamespace
 
 
-def test_inprogress_with_items(mock_data, console, load_json):
+def test_inprogress_with_items(mock_data, console, load_json, monkeypatch):
+    monkeypatch.setattr(list_, "should_audit", lambda: False)
     problem_a = "Problem A"
     problem_b = "Problem B"
 
@@ -25,7 +27,8 @@ def test_inprogress_with_items(mock_data, console, load_json):
     assert problem_b in data
 
 
-def test_inprogress_empty(console):
+def test_inprogress_empty(console, monkeypatch):
+    monkeypatch.setattr(list_, "should_audit", lambda: False)
     args = SimpleNamespace()
     inprogress.handle(args=args, console=console)
 

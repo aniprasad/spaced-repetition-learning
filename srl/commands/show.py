@@ -2,7 +2,7 @@ from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
 from srl.storage import load_json, PROGRESS_FILE, MASTERED_FILE
-from srl.commands.list_ import get_due_problems
+from srl.commands.list_ import get_due_problems, maybe_trigger_audit
 from datetime import datetime, timedelta
 from srl.utils import today
 
@@ -25,6 +25,9 @@ def add_subparser(subparsers):
 
 
 def handle(args, console: Console):
+    if maybe_trigger_audit(console):
+        return
+
     # Determine problem name
     if hasattr(args, "leetcode_id") and args.leetcode_id is not None:
         name = find_by_leetcode_id(args.leetcode_id)

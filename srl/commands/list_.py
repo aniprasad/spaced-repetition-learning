@@ -12,14 +12,12 @@ from srl.storage import (
 from srl.commands.config import Config
 
 
-def add_subparser(subparsers):
-    parser = subparsers.add_parser("list", help="List due problems")
-    parser.add_argument("-n", type=int, default=None, help="Max number of problems")
-    parser.set_defaults(handler=handle)
-    return parser
-
-
-def handle(args, console: Console):
+def maybe_trigger_audit(console: Console) -> bool:
+    """
+    Check if an audit should be triggered and handle it.
+    Returns True if audit was triggered (should stop further execution),
+    False if normal execution should continue.
+    """
     if should_audit() and not get_current_audit():
         problem = random_audit()
         if problem:
@@ -28,7 +26,20 @@ def handle(args, console: Console):
             console.print(
                 "Run [green]srl audit --pass[/green] or [red]--fail[/red] when done"
             )
-            return
+            return True
+    return False
+
+
+def add_subparser(subparsers):
+    parser = subparsers.add_parser("list", help="List due problems")
+    parser.add_argument("-n", type=int, default=None, help="Max number of problems")
+    parser.set_defaults(handler=handle)
+    return parser
+
+
+def handle(args, console: Console):
+    if maybe_trigger_audit(console):
+        return
 
     problems = get_due_problems(getattr(args, "n", None))
     masters = mastery_candidates()

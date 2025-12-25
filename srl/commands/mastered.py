@@ -4,6 +4,7 @@ from srl.storage import (
     load_json,
     MASTERED_FILE,
 )
+from srl.commands.list_ import maybe_trigger_audit
 
 
 def add_subparser(subparsers):
@@ -16,6 +17,9 @@ def add_subparser(subparsers):
 
 
 def handle(args, console: Console):
+    if maybe_trigger_audit(console):
+        return
+
     data = load_json(MASTERED_FILE)
     mastered_problems = get_mastered_problems()
     mastered_count = len(mastered_problems)
