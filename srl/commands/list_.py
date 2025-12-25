@@ -32,21 +32,41 @@ def handle(args, console: Console):
 
     problems = get_due_problems(getattr(args, "n", None))
     masters = mastery_candidates()
+    overdue_info = get_overdue_info()
 
     if problems:
         lines = []
         data = load_json(PROGRESS_FILE)
+        has_indicators = False
+        
         for i, p in enumerate(problems):
             mark = " [magenta]*[/magenta]" if p in masters else ""
+            
+            # Add overdue indicator
+            overdue_indicator = ""
+            if p in overdue_info:
+                days_overdue = overdue_info[p]
+                if days_overdue >= 7:
+                    overdue_indicator = " 🔴"
+                    has_indicators = True
+                elif days_overdue >= 3:
+                    overdue_indicator = " 🟡"
+                    has_indicators = True
+            
             # Get LeetCode ID if it exists
             leetcode_id = ""
             if p in data and "leetcode_id" in data[p]:
                 leetcode_id = f"[dim]#{data[p]['leetcode_id']}[/dim] "
-            lines.append(f"{i+1}. {leetcode_id}{p}{mark}")
+            lines.append(f"{i+1}. {leetcode_id}{p}{mark}{overdue_indicator}")
+
+        # Add legend at the top if indicators are present
+        legend_text = ""
+        if has_indicators:
+            legend_text = "[dim]🟡 3-6 days overdue  🔴 7+ days overdue[/dim]\n"
 
         console.print(
             Panel.fit(
-                "\n".join(lines),
+                legend_text + "\n".join(lines),
                 title=f"[bold blue]Problems to Practice [{today().isoformat()}] ({len(problems)})[/bold blue]",
                 border_style="blue",
                 title_align="left",
@@ -78,11 +98,12 @@ def get_due_problems(limit=None) -> list[str]:
         last_date = datetime.fromisoformat(last["date"]).date()
         due_date = last_date + timedelta(days=last["rating"])
         if due_date <= today():
-            due.append((name, last_date, last["rating"]))
+            days_overdue = (today() - due_date).days
+            due.append((name, last_date, last["rating"], days_overdue))
 
-    # Sort: older last attempt first, then lower rating
-    due.sort(key=lambda x: (x[1], x[2]))
-    due_names = [name for name, _, _ in (due[:limit] if limit else due)]
+    # Sort: most overdue first, then older last attempt, then lower rating
+    due.sort(key=lambda x: (-x[3], x[1], x[2]))
+    due_names = [name for name, _, _, _ in (due[:limit] if limit else due)]
 
     if not due_names:
         next_up = load_json(NEXT_UP_FILE)
@@ -90,6 +111,25 @@ def get_due_problems(limit=None) -> list[str]:
         return fallback
 
     return due_names
+
+
+def get_overdue_info() -> dict[str, int]:
+    """Return mapping of problem names to days overdue"""
+    data = load_json(PROGRESS_FILE)
+    overdue_info = {}
+
+    for name, info in data.items():
+        history = info["history"]
+        if not history:
+            continue
+        last = history[-1]
+        last_date = datetime.fromisoformat(last["date"]).date()
+        due_date = last_date + timedelta(days=last["rating"])
+        if due_date <= today():
+            days_overdue = (today() - due_date).days
+            overdue_info[name] = days_overdue
+
+    return overdue_info
 
 
 def mastery_candidates() -> set[str]:
