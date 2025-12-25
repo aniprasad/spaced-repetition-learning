@@ -144,8 +144,9 @@ def test_list_displays_leetcode_id(mock_data, console, load_json, backdate_probl
     assert problem in output
 
 
-def test_inprogress_displays_leetcode_id(mock_data, console, load_json):
+def test_inprogress_displays_leetcode_id(mock_data, console, load_json, monkeypatch):
     """Test that srl inprogress displays LeetCode IDs"""
+    monkeypatch.setattr(list_, "should_audit", lambda: False)
     problem = "Merge Two Lists"
     leetcode_id = 21
     
@@ -163,8 +164,9 @@ def test_inprogress_displays_leetcode_id(mock_data, console, load_json):
     assert problem in output
 
 
-def test_mastered_displays_leetcode_id(mock_data, console, load_json):
+def test_mastered_displays_leetcode_id(mock_data, console, load_json, monkeypatch):
     """Test that srl mastered displays LeetCode IDs"""
+    monkeypatch.setattr(list_, "should_audit", lambda: False)
     problem = "Best Time to Buy and Sell Stock"
     leetcode_id = 121
     rating = 5

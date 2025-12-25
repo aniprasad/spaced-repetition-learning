@@ -1,4 +1,5 @@
 from rich.console import Console
+from rich.panel import Panel
 from srl.utils import today
 import random
 from srl.storage import (
@@ -43,8 +44,17 @@ def handle(args, console: Console):
     else:
         curr = get_current_audit()
         if curr:
-            console.print(f"Current audit problem: [cyan]{curr}[/cyan]")
-            console.print("[blue]Run with --pass or --fail to complete it.[/blue]")
+            console.print("")
+            console.print(Panel.fit(
+                f"📝 Active Audit: [bold cyan]{curr}[/bold cyan]\n\n"
+                f"💡 Complete this audit, then run:\n"
+                f"   • [bold green]srl audit --pass[/bold green] if you solved it\n"
+                f"   • [bold red]srl audit --fail[/bold red] if you couldn't",
+                title="⚠️ [bold yellow]PENDING AUDIT[/bold yellow]",
+                border_style="bold yellow",
+                title_align="center"
+            ))
+            console.print("")
         else:
             problem = random_audit()
             if problem:

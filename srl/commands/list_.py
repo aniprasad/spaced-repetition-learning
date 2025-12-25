@@ -2,6 +2,7 @@ from rich.console import Console
 from rich.panel import Panel
 from srl.utils import today
 from srl.commands.audit import get_current_audit, random_audit
+from srl.commands.config import Config
 from datetime import datetime, timedelta
 import random
 from srl.storage import (
@@ -21,11 +22,18 @@ def maybe_trigger_audit(console: Console) -> bool:
     if should_audit() and not get_current_audit():
         problem = random_audit()
         if problem:
-            console.print("[bold red]You have been randomly audited![/bold red]")
-            console.print(f"[yellow]Audit problem:[/yellow] [cyan]{problem}[/cyan]")
-            console.print(
-                "Run [green]srl audit --pass[/green] or [red]--fail[/red] when done"
-            )
+            console.print("")
+            console.print(Panel.fit(
+                f"🚨 [bold red]RANDOM AUDIT TRIGGERED[/bold red] 🚨\n\n"
+                f"📝 Problem: [bold cyan]{problem}[/bold cyan]\n\n"
+                f"💡 Solve this problem, then run:\n"
+                f"   • [bold green]srl audit --pass[/bold green] if you solved it\n"
+                f"   • [bold red]srl audit --fail[/bold red] if you couldn't",
+                title="🎯 [bold yellow]SPACED REPETITION AUDIT[/bold yellow]",
+                border_style="bold red",
+                title_align="center"
+            ))
+            console.print("")
             return True
     return False
 

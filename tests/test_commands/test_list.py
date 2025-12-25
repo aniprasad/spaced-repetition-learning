@@ -88,8 +88,8 @@ def test_list_triggers_audit(console, monkeypatch):
     list_.handle(args=args, console=console)
 
     output = console.export_text()
-    assert "You have been randomly audited!" in output
-    assert "Audit problem:" in output
+    assert "RANDOM AUDIT TRIGGERED" in output
+    assert "📝 Problem:" in output
     assert problem in output
 
 

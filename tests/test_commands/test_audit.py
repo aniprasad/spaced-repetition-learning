@@ -40,7 +40,7 @@ def test_show_current_audit(console):
     audit.handle(args=args, console=console)
 
     output = console.export_text()
-    assert "Current audit problem" in output
+    assert "Active Audit: Current Audit" in output
     assert problem in output
     assert "Run with --pass or --fail" in output
 
